@@ -9,7 +9,7 @@ if __name__ == "__main__":
         prog="make-hangman-phrase",
         description="Generate a regular expression from a hangman expression",
     )
-    parser.add_argument("--guess", "-g", help="guessed character", action="append")
+    parser.add_argument("-g", "--guess", help="guessed character", action="append")
     parser.add_argument("phrase", help="phrase")
 
     c = parser.parse_args()
