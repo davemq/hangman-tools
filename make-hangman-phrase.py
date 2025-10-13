@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-import re
 import string
 
 if __name__ == "__main__":
@@ -16,7 +15,7 @@ if __name__ == "__main__":
     if not c.guess:
         c.guess = []
     guesses = []
-    occur = dict()
+    occur = {}
     for ch in c.guess:
         guesses.append(ch.lower())
         occur[ch.lower()] = 0
@@ -44,7 +43,7 @@ if __name__ == "__main__":
 
     print(f"Phrase:\t\t{phrase}")
 
-    if len(occur) == 0:
+    if not occur:
         print("Occurrences:\tNone")
     else:
         print(f"Occurrences:\t{occur}")
@@ -54,7 +53,7 @@ if __name__ == "__main__":
     for g in guesses:
         if g.upper() not in phrase:
             wrong += g.upper()
-    if len(wrong) == 0:
+    if not wrong:
         print("Wrong guess:\tNone")
     else:
         print(f"Wrong guesses:\t{wrong}")
