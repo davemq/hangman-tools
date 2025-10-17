@@ -8,6 +8,17 @@ global chars
 
 chars = string.ascii_lowercase
 
+def chars_to_string():
+    global chars
+
+    if chars == string.ascii_lowercase:
+        s = "[[:lower:]]"
+    else:
+        s = f"[{chars}]"
+
+    return s
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="hangman-regexp",
@@ -50,7 +61,7 @@ if __name__ == "__main__":
         for ch in wordchars:
             if ch != "_":
                 if unders > 0:
-                    regex += f"[{chars}]"
+                    regex += chars_to_string()
                 if unders > 1:
                     regex += f"\\{{{unders}\\}}"
                 unders = 0
@@ -58,7 +69,7 @@ if __name__ == "__main__":
             else:
                 unders += 1
         if unders > 0:
-            regex += f"[{chars}]"
+            regex += chars_to_string()
         if unders > 1:
             regex += f"\\{{{unders}\\}}"
         regex += "\\>"
