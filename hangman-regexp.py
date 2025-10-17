@@ -4,19 +4,50 @@ import argparse
 import re
 import string
 
-global chars
+global chars, outchars
 
 chars = string.ascii_lowercase
+removed_chars = set()
+
+# Split s using all the separators in seps, and return the list
+def multi_split(s, sepsset):
+    if len(sepsset) == 0:
+        return list(s)
+
+    seps = list(sepsset)
+    seps.sort()
+    words = []
+    for c in seps:
+        w = s.split(sep=c, maxsplit=1)
+        if len(w[0]) != 0:
+               words.append(w[0])
+        s = w[1]
+    if len(s) != 0:
+        words.append(s)
+    return words
 
 def chars_to_string():
-    global chars
+    global chars, removed_chars
 
-    if chars == string.ascii_lowercase:
+    if len(removed_chars) == 0:
         s = "[[:lower:]]"
     else:
-        s = f"[{chars}]"
+        # split chars by removed_chars
+        seqs = multi_split(chars, removed_chars)
+        s = "["
+        for item in seqs:
+            if len(item) < 4:
+                s += item
+            else:
+                s += f"{item[0]}-{item[-1]}"
+        s += "]"
 
     return s
+
+# Remove ch from chars.
+def remove(ch):
+    global removed_chars
+    removed_chars.add(ch)
 
 
 if __name__ == "__main__":
@@ -35,7 +66,7 @@ if __name__ == "__main__":
     c = parser.parse_args()
     if c.remove:
         for ch in c.remove:
-            chars = chars.replace(ch.lower(), "")
+            remove(ch.lower())
 
     c.phrase = c.phrase.lower()
 
@@ -49,7 +80,7 @@ if __name__ == "__main__":
         wordchars = w.split(" ")
         for ch in wordchars:
             if ch in chars:
-                chars = chars.replace(ch, "")
+                remove(ch)
 
     # Write regexp
     regex = ""
