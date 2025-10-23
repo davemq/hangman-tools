@@ -74,7 +74,8 @@ if __name__ == "__main__":
 
     if c.phrase.startswith(' ') or c.phrase.endswith(' '):
         print(f"phrase '{c.phrase}' starts or ends with spaces; possible copy and paste error")
-    c.phrase = c.phrase.strip().lower()
+        c.phrase = c.phrase.strip()
+    c.phrase = c.phrase.lower()
 
     # Replace 2 or more spaces or / surrounded by 0 or more spaces with " XXX "
     c.phrase = re.sub(r" */ *", " XXX ", c.phrase)
