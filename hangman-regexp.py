@@ -67,11 +67,11 @@ if __name__ == "__main__":
     parser.add_argument("phrase", help="hangman phrase")
 
     c = parser.parse_args()
+
     if c.remove:
         for ch in c.remove:
             remove(ch.lower())
-
-    c.phrase = c.phrase.lower()
+    c.phrase = c.phrase.strip().lower()
 
     # Replace 2 or more spaces or / surrounded by 0 or more spaces with " XXX "
     c.phrase = re.sub(r" */ *", " XXX ", c.phrase)
