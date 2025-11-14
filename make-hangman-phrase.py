@@ -25,8 +25,6 @@ if __name__ == "__main__":
     # Remove phrase alphabetical characters from chars and outchars
     words = c.phrase.split(" ")
 
-    alphas = string.ascii_lowercase
-
     # Write phrase
     phrase = ""
     for w in words:
@@ -34,7 +32,7 @@ if __name__ == "__main__":
             if ch in guesses:
                 phrase += ch.upper() + " "
                 occur[ch.lower()] += 1
-            elif ch in alphas:
+            elif ch in string.ascii_lowercase:
                 phrase += "_ "
             else:
                 phrase += ch + " "
