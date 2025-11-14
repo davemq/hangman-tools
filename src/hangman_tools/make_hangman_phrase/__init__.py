@@ -3,7 +3,7 @@
 import argparse
 import string
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         prog="make-hangman-phrase",
         description="Generate a regular expression from a hangman expression",
@@ -55,3 +55,6 @@ if __name__ == "__main__":
         print("Wrong guess:\tNone")
     else:
         print(f"Wrong guesses:\t{wrong}")
+
+if __name__ == "__main__":
+    main()

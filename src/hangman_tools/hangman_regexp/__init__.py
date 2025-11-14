@@ -53,7 +53,7 @@ def remove(ch):
     removed_chars.add(ch)
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         prog="hangman-regexp",
         description="Generate a regular expression from a hangman expression",
@@ -114,3 +114,6 @@ if __name__ == "__main__":
         separator = "[[:space:]]\\+"
 
     print(regex)
+
+if __name__ == "__main__":
+    main()
