@@ -1,17 +1,19 @@
-#!/usr/bin/env python
+"""Create a regular expression from a hangman-like phrase, with _ representing unknown letters.
+
+Optionally, exclude some letters from the regular expression; for example,
+wrong guesses can be excluded.
+"""
 
 import argparse
 import re
 import string
 
-global chars, outchars
-
 chars = string.ascii_lowercase
 removed_chars = set()
 
 
-# Split s using all the separators in seps, and return the list
 def multi_split(s, sepsset):
+    """Split s using all the separators in seps, and return the list."""
     if len(sepsset) == 0:
         return list(s)
 
@@ -29,8 +31,7 @@ def multi_split(s, sepsset):
 
 
 def chars_to_string():
-    global chars, removed_chars
-
+    """Convert chars to a regular expression."""
     if not removed_chars:
         s = "[[:lower:]]"
     else:
@@ -38,7 +39,7 @@ def chars_to_string():
         seqs = multi_split(chars, removed_chars)
         s = "["
         for item in seqs:
-            if len(item) < 4:
+            if len(item) < len("a-d"):
                 s += item
             else:
                 s += f"{item[0]}-{item[-1]}"
@@ -49,11 +50,15 @@ def chars_to_string():
 
 # Remove ch from chars.
 def remove(ch):
-    global removed_chars
+    """Add ch to the set of removed characters."""
     removed_chars.add(ch)
 
 
 def main():
+    """Convert the given hangman phrase to a regular expression and print it.
+
+    Optionally remove wrongly guessed characters from the regular expression.
+    """
     parser = argparse.ArgumentParser(
         prog="hangman-regexp",
         description="Generate a regular expression from a hangman expression",
@@ -72,8 +77,10 @@ def main():
         for ch in c.remove:
             remove(ch.lower())
 
-    if c.phrase.startswith(' ') or c.phrase.endswith(' '):
-        print(f"phrase '{c.phrase}' starts or ends with spaces; possible copy and paste error")
+    if c.phrase.startswith(" ") or c.phrase.endswith(" "):
+        print(
+            f"phrase '{c.phrase}' starts or ends with spaces; possible copy and paste error"
+        )
         c.phrase = c.phrase.strip()
     c.phrase = c.phrase.lower()
 
