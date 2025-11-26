@@ -1,9 +1,23 @@
-#!/usr/bin/env python
+"""Create a hangman-style phrase from a plain text phrase.
+
+Optionally specify guessed letters. Show
+- the hangman-style phrase
+- guessed letters frequency within the phrase
+- wrong guesses
+"""
 
 import argparse
 import string
 
+
 def main():
+    """Create a hangman-style phrase from a plain text phrase.
+
+    Optionally specify guessed letters. Show
+    - the hangman-style phrase
+    - guessed letters frequency within the phrase
+    - wrong guesses
+    """
     parser = argparse.ArgumentParser(
         prog="make-hangman-phrase",
         description="Generate a regular expression from a hangman expression",
