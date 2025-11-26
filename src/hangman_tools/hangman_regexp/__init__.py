@@ -48,12 +48,6 @@ def chars_to_string():
     return s
 
 
-# Remove ch from chars.
-def remove(ch):
-    """Add ch to the set of removed characters."""
-    removed_chars.add(ch)
-
-
 def main():
     """Convert the given hangman phrase to a regular expression and print it.
 
@@ -75,7 +69,7 @@ def main():
 
     if c.remove:
         for ch in c.remove:
-            remove(ch.lower())
+            removed_chars.add(ch.lower())
 
     if c.phrase.startswith(" ") or c.phrase.endswith(" "):
         print(
@@ -94,7 +88,7 @@ def main():
         wordchars = w.split(" ")
         for ch in wordchars:
             if ch != "_" and ch in chars:
-                remove(ch)
+                removed_chars.add(ch)
 
     # Write regexp
     regex = ""
