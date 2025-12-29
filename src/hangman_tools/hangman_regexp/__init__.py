@@ -8,6 +8,7 @@ the regular expression; for example, wrong guesses can be excluded.
 import argparse
 import re
 import string
+import sys
 
 chars = string.ascii_lowercase
 removed_chars = set()
@@ -88,6 +89,8 @@ def main():
     word_list = []
     words = c.phrase.split(" XXX ")
     for w in words:
+        if len(w) < 1:
+            sys.exit("zero length word in phrase")
         wordchars_copy = w.split(" ")
         wordchars = []
         for item in wordchars_copy:
