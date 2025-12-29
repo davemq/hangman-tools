@@ -104,10 +104,12 @@ def main():
                 removed_chars.add(ch)
 
     # Write regexp
+    word_start = "\\<"
+    word_end = "\\>"
     regex = ""
     separator = ""
     for w in word_list:
-        regex += separator + "\\<"
+        regex += separator + word_start
         unders = 0
         for ch in w:
             if ch != "_":
@@ -117,13 +119,16 @@ def main():
                     regex += f"\\{{{unders}\\}}"
                 unders = 0
                 regex += ch
+                if not ch.isalnum():
+                    word_start = ''
+                    word_end = ''
             else:
                 unders += 1
         if unders > 0:
             regex += chars_to_string()
         if unders > 1:
             regex += f"\\{{{unders}\\}}"
-        regex += "\\>"
+        regex += word_end
         separator = "[[:space:]]\\+"
 
     print(regex)
