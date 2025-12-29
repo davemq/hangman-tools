@@ -1,7 +1,8 @@
-"""Create a regular expression from a hangman-like phrase, with _ representing unknown letters.
+"""Create a regular expression from a hangman-like phrase.
 
-Optionally, exclude some letters from the regular expression; for example,
-wrong guesses can be excluded.
+_ represents an unknown letter. Optionally, exclude some letters from
+the regular expression; for example, wrong guesses can be excluded.
+
 """
 
 import argparse
@@ -73,7 +74,8 @@ def main():
 
     if c.phrase.startswith(" ") or c.phrase.endswith(" "):
         print(
-            f"phrase '{c.phrase}' starts or ends with spaces; possible copy and paste error"
+            f"phrase '{c.phrase}' starts or ends with spaces; "
+            "possible copy and paste error",
         )
         c.phrase = c.phrase.strip()
     c.phrase = c.phrase.lower()
@@ -83,9 +85,17 @@ def main():
     c.phrase = re.sub(r" {2,}", " XXX ", c.phrase)
 
     # Remove phrase alphabetical characters from chars and outchars
+    word_list = []
     words = c.phrase.split(" XXX ")
     for w in words:
-        wordchars = w.split(" ")
+        wordchars_copy = w.split(" ")
+        wordchars = []
+        for item in wordchars_copy:
+            if len(item) <= 1:
+                wordchars.append(item)
+            else:
+                wordchars.extend(list(item))
+        word_list.append(wordchars)
         for ch in wordchars:
             if ch != "_" and ch in chars:
                 removed_chars.add(ch)
@@ -93,11 +103,10 @@ def main():
     # Write regexp
     regex = ""
     separator = ""
-    for w in words:
+    for w in word_list:
         regex += separator + "\\<"
-        wordchars = w.split(" ")
         unders = 0
-        for ch in wordchars:
+        for ch in w:
             if ch != "_":
                 if unders > 0:
                     regex += chars_to_string()
@@ -115,6 +124,7 @@ def main():
         separator = "[[:space:]]\\+"
 
     print(regex)
+
 
 if __name__ == "__main__":
     main()
