@@ -1,6 +1,6 @@
 [project]
 name = "hangman-tools"
-version = "0.1.6"
+version = "0.1.7"
 description = "Tools for playing and running hangman-like word games"
 readme = "README.md"
 requires-python = ">=3.13"

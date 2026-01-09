@@ -80,6 +80,7 @@ def main():
         )
         c.phrase = c.phrase.strip()
     c.phrase = c.phrase.lower()
+    c.phrase = c.phrase.replace("\n", " ")
 
     # Replace 2 or more spaces or / surrounded by 0 or more spaces with " XXX "
     c.phrase = re.sub(r" */ *", " XXX ", c.phrase)
