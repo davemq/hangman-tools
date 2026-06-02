@@ -1,17 +1,21 @@
-#!/usr/bin/env python
+"""Create a regular expression from a hangman-like phrase.
+
+_ represents an unknown letter. Optionally, exclude some letters from
+the regular expression; for example, wrong guesses can be excluded.
+
+"""
 
 import argparse
 import re
 import string
-
-global chars, outchars
+import sys
 
 chars = string.ascii_lowercase
 removed_chars = set()
 
 
-# Split s using all the separators in seps, and return the list
 def multi_split(s, sepsset):
+    """Split s using all the separators in seps, and return the list."""
     if len(sepsset) == 0:
         return list(s)
 
@@ -29,8 +33,7 @@ def multi_split(s, sepsset):
 
 
 def chars_to_string():
-    global chars, removed_chars
-
+    """Convert chars to a regular expression."""
     if not removed_chars:
         s = "[[:lower:]]"
     else:
@@ -38,7 +41,7 @@ def chars_to_string():
         seqs = multi_split(chars, removed_chars)
         s = "["
         for item in seqs:
-            if len(item) < 4:
+            if len(item) < len("a-d"):
                 s += item
             else:
                 s += f"{item[0]}-{item[-1]}"
@@ -47,13 +50,11 @@ def chars_to_string():
     return s
 
 
-# Remove ch from chars.
-def remove(ch):
-    global removed_chars
-    removed_chars.add(ch)
+def main():
+    """Convert the given hangman phrase to a regular expression and print it.
 
-
-if __name__ == "__main__":
+    Optionally remove wrongly guessed characters from the regular expression.
+    """
     parser = argparse.ArgumentParser(
         prog="hangman-regexp",
         description="Generate a regular expression from a hangman expression",
@@ -70,33 +71,48 @@ if __name__ == "__main__":
 
     if c.remove:
         for ch in c.remove:
-            remove(ch.lower())
+            removed_chars.add(ch.lower())
 
-    if c.phrase.startswith(' ') or c.phrase.endswith(' '):
-        print(f"phrase '{c.phrase}' starts or ends with spaces; possible copy and paste error")
+    if c.phrase.startswith(" ") or c.phrase.endswith(" "):
+        print(
+            f"phrase '{c.phrase}' starts or ends with spaces; "
+            "possible copy and paste error",
+        )
         c.phrase = c.phrase.strip()
     c.phrase = c.phrase.lower()
+    c.phrase = c.phrase.replace("\n", " ")
 
     # Replace 2 or more spaces or / surrounded by 0 or more spaces with " XXX "
     c.phrase = re.sub(r" */ *", " XXX ", c.phrase)
     c.phrase = re.sub(r" {2,}", " XXX ", c.phrase)
 
     # Remove phrase alphabetical characters from chars and outchars
+    word_list = []
     words = c.phrase.split(" XXX ")
     for w in words:
-        wordchars = w.split(" ")
+        if len(w) < 1:
+            sys.exit("zero length word in phrase")
+        wordchars_copy = w.split(" ")
+        wordchars = []
+        for item in wordchars_copy:
+            if len(item) <= 1:
+                wordchars.append(item)
+            else:
+                wordchars.extend(list(item))
+        word_list.append(wordchars)
         for ch in wordchars:
             if ch != "_" and ch in chars:
-                remove(ch)
+                removed_chars.add(ch)
 
     # Write regexp
+    word_start = "\\<"
+    word_end = "\\>"
     regex = ""
     separator = ""
-    for w in words:
-        regex += separator + "\\<"
-        wordchars = w.split(" ")
+    for w in word_list:
+        regex += separator + word_start
         unders = 0
-        for ch in wordchars:
+        for ch in w:
             if ch != "_":
                 if unders > 0:
                     regex += chars_to_string()
@@ -104,13 +120,20 @@ if __name__ == "__main__":
                     regex += f"\\{{{unders}\\}}"
                 unders = 0
                 regex += ch
+                if not ch.isalnum():
+                    word_start = ''
+                    word_end = ''
             else:
                 unders += 1
         if unders > 0:
             regex += chars_to_string()
         if unders > 1:
             regex += f"\\{{{unders}\\}}"
-        regex += "\\>"
+        regex += word_end
         separator = "[[:space:]]\\+"
 
     print(regex)
+
+
+if __name__ == "__main__":
+    main()

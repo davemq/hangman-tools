@@ -1,9 +1,23 @@
-#!/usr/bin/env python
+"""Create a hangman-style phrase from a plain text phrase.
+
+Optionally specify guessed letters. Show
+- the hangman-style phrase
+- guessed letters frequency within the phrase
+- wrong guesses
+"""
 
 import argparse
 import string
 
-if __name__ == "__main__":
+
+def main():
+    """Create a hangman-style phrase from a plain text phrase.
+
+    Optionally specify guessed letters. Show
+    - the hangman-style phrase
+    - guessed letters frequency within the phrase
+    - wrong guesses
+    """
     parser = argparse.ArgumentParser(
         prog="make-hangman-phrase",
         description="Generate a regular expression from a hangman expression",
@@ -25,8 +39,6 @@ if __name__ == "__main__":
     # Remove phrase alphabetical characters from chars and outchars
     words = c.phrase.split(" ")
 
-    alphas = string.ascii_lowercase
-
     # Write phrase
     phrase = ""
     for w in words:
@@ -34,7 +46,7 @@ if __name__ == "__main__":
             if ch in guesses:
                 phrase += ch.upper() + " "
                 occur[ch.lower()] += 1
-            elif ch in alphas:
+            elif ch in string.ascii_lowercase:
                 phrase += "_ "
             else:
                 phrase += ch + " "
@@ -57,3 +69,6 @@ if __name__ == "__main__":
         print("Wrong guess:\tNone")
     else:
         print(f"Wrong guesses:\t{wrong}")
+
+if __name__ == "__main__":
+    main()
