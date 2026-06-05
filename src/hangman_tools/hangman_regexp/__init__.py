@@ -6,6 +6,7 @@ the regular expression; for example, wrong guesses can be excluded.
 """
 
 import argparse
+import pyparsing as pp
 import re
 import string
 import sys
@@ -73,34 +74,20 @@ def main():
         for ch in c.remove:
             removed_chars.add(ch.lower())
 
-    if c.phrase.startswith(" ") or c.phrase.endswith(" "):
-        print(
-            f"phrase '{c.phrase}' starts or ends with spaces; "
-            "possible copy and paste error",
-        )
-        c.phrase = c.phrase.strip()
     c.phrase = c.phrase.lower()
-    c.phrase = c.phrase.replace("\n", " ")
+    c.phrase = c.phrase.replace("\n", "")
+    c.phrase = c.phrase.replace(" ", "")
 
-    # Replace 2 or more spaces or / surrounded by 0 or more spaces with " XXX "
-    c.phrase = re.sub(r" */ *", " XXX ", c.phrase)
-    c.phrase = re.sub(r" {2,}", " XXX ", c.phrase)
+    word = pp.Word(pp.srange(r"[_,?'a-z]"))
+    words = pp.Opt(pp.Literal("/")).suppress() + \
+        pp.DelimitedList(expr=word, delim="/").set_results_name("words", list_all_matches=True)
+    word_list = words.parse_string(c.phrase, allow_trailing_delim=True)
 
     # Remove phrase alphabetical characters from chars and outchars
-    word_list = []
-    words = c.phrase.split(" XXX ")
-    for w in words:
+    for w in word_list:
         if len(w) < 1:
             sys.exit("zero length word in phrase")
-        wordchars_copy = w.split(" ")
-        wordchars = []
-        for item in wordchars_copy:
-            if len(item) <= 1:
-                wordchars.append(item)
-            else:
-                wordchars.extend(list(item))
-        word_list.append(wordchars)
-        for ch in wordchars:
+        for ch in w:
             if ch != "_" and ch in chars:
                 removed_chars.add(ch)
 
