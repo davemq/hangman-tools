@@ -14,7 +14,6 @@ import sys
 chars = string.ascii_lowercase
 removed_chars = set()
 
-
 def multi_split(s, sepsset):
     """Split s using all the separators in seps, and return the list."""
     if len(sepsset) == 0:
@@ -106,7 +105,7 @@ def main():
                 if unders > 1:
                     regex += f"\\{{{unders}\\}}"
                 unders = 0
-                regex += ch
+                regex += re.escape(ch)
                 if not ch.isalnum():
                     word_start = ''
                     word_end = ''
