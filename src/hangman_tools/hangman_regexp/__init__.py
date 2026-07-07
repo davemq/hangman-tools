@@ -77,7 +77,7 @@ def main():
     c.phrase = c.phrase.replace("\n", "")
     c.phrase = c.phrase.replace(" ", "")
 
-    word = pp.Word(pp.srange(r"[_,?'a-z]"))
+    word = pp.Word(pp.srange(r"[-._,?'a-z]"))
     words = pp.Opt(pp.Literal("/")).suppress() + \
         pp.DelimitedList(expr=word, delim="/").set_results_name("words", list_all_matches=True)
     word_list = words.parse_string(c.phrase, allow_trailing_delim=True)
