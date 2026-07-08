@@ -79,8 +79,8 @@ def main():
 
     word = pp.Word(pp.srange(r"[-._,?'a-z]"))
     words = pp.Opt(pp.Literal("/")).suppress() + \
-        pp.DelimitedList(expr=word, delim="/").set_results_name("words", list_all_matches=True)
-    word_list = words.parse_string(c.phrase, allow_trailing_delim=True)
+        pp.DelimitedList(expr=word, delim="/", allow_trailing_delim=True).set_results_name("words", list_all_matches=True)
+    word_list = words.parse_string(c.phrase, parse_all=True)
 
     # Remove phrase alphabetical characters from chars and outchars
     for w in word_list:
