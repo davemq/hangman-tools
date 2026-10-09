@@ -50,6 +50,14 @@ def chars_to_string():
     return s
 
 
+def single_letter(s):
+    """Validate that s is a single letter a-z, and return it lowercased."""
+    ch = s.lower()
+    if len(ch) != 1 or ch not in chars:
+        raise argparse.ArgumentTypeError(f"must be a single letter a-z: {s!r}")
+    return ch
+
+
 def main():
     """Convert the given hangman phrase to a regular expression and print it.
 
@@ -64,6 +72,7 @@ def main():
         "--remove",
         help="remove character from generated regular expression",
         action="append",
+        type=single_letter,
     )
     parser.add_argument("phrase", help="hangman phrase")
 
@@ -71,7 +80,7 @@ def main():
 
     if c.remove:
         for ch in c.remove:
-            removed_chars.add(ch.lower())
+            removed_chars.add(ch)
 
     c.phrase = c.phrase.lower()
     c.phrase = c.phrase.replace("\n", "")
