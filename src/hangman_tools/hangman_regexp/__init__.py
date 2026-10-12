@@ -114,7 +114,9 @@ def main():
                 if unders > 1:
                     regex += f"\\{{{unders}\\}}"
                 unders = 0
-                regex += re.escape(ch)
+                if ch == '.':
+                    regex += "\\"
+                regex += ch
                 if not ch.isalnum():
                     word_start = ''
                     word_end = ''
