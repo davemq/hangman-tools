@@ -93,8 +93,6 @@ def main():
 
     # Remove phrase alphabetical characters from chars and outchars
     for w in word_list:
-        if len(w) < 1:
-            sys.exit("zero length word in phrase")
         for ch in w:
             if ch != "_" and ch in chars:
                 removed_chars.add(ch)
