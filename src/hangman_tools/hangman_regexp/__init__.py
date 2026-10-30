@@ -1,7 +1,9 @@
-"""Create a regular expression from a hangman-like phrase.
+"""Create and print a regular expression from a hangman-like phrase.
 
-_ represents an unknown letter. Optionally, exclude some letters from
-the regular expression; for example, wrong guesses can be excluded.
+'_' (underscore) represents an unknown letter. Optionally, exclude some letters
+from the regular expression; for example, wrong guesses can be excluded.
+
+Words are separated by a '/' (forward slash) character.
 
 """
 
@@ -62,11 +64,19 @@ def single_letter(s):
 def main():
     """Convert the given hangman phrase to a regular expression and print it.
 
-    Optionally remove wrongly guessed characters from the regular expression.
+    A hangman phrase has '_' characters as wildcards. Words are separated
+    by '/' (forward slash) characters.
+
     """
     parser = argparse.ArgumentParser(
         prog="hangman-regexp",
-        description="Generate a regular expression from a hangman expression",
+        description="""
+        Generate a regular expression from a hangman expression.
+        Wildcards are represented by '_' (underscore) characters.
+        Words are separated by '/' (forward slash) characters.
+        Incorrectly guessed letters may be removed from the
+        generated phrase using the '-x' option.
+        """,
     )
     parser.add_argument(
         "-x",
