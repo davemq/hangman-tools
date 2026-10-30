@@ -119,6 +119,8 @@ def main():
                     word_start = ''
                     word_end = ''
             else:
+                if len(removed_chars) >= len(string.ascii_lowercase):
+                    sys.exit("Wildcard in input but there are no wildcard characters")
                 unders += 1
         if unders > 0:
             regex += chars_to_string()
