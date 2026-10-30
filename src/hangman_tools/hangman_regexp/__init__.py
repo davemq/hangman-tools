@@ -6,6 +6,7 @@ the regular expression; for example, wrong guesses can be excluded.
 """
 
 import argparse
+from collections import namedtuple
 import pyparsing as pp
 import re
 import string
@@ -97,13 +98,15 @@ def main():
             if ch != "_" and ch in chars:
                 removed_chars.add(ch)
 
+    # constants
+    WordParts = namedtuple('WordParts', ['start', 'end'])
+    wordparts = WordParts(start="\\<", end="\\>")
+
     # Write regexp
-    word_start = "\\<"
-    word_end = "\\>"
     regex = ""
     separator = ""
     for w in word_list:
-        regex += separator + word_start
+        regex += separator + wordparts.start
         unders = 0
         for ch in w:
             if ch != "_":
@@ -115,9 +118,6 @@ def main():
                 if ch == '.':
                     regex += "\\"
                 regex += ch
-                if not ch.isalnum():
-                    word_start = ''
-                    word_end = ''
             else:
                 if len(removed_chars) >= len(string.ascii_lowercase):
                     sys.exit("Wildcard in input but there are no wildcard characters")
@@ -126,7 +126,7 @@ def main():
             regex += chars_to_string()
         if unders > 1:
             regex += f"\\{{{unders}\\}}"
-        regex += word_end
+        regex += wordparts.end
         separator = "[[:space:]]\\+"
 
     print(regex)
