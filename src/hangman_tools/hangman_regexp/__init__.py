@@ -112,31 +112,73 @@ def main():
     WordParts = namedtuple('WordParts', ['start', 'end'])
     wordparts = WordParts(start="\\<", end="\\>")
 
+    def literal(s):
+        """Escape s so it matches itself in a (GNU basic) regular expression.
+
+        Of the punctuation characters hangman-regexp accepts, only '.' is
+        special; the others ('-', ',', '?', "'") are ordinary characters.
+        """
+        return s.replace(".", "\\.")
+
     # Write regexp
     regex = ""
     separator = ""
     for w in word_list:
-        regex += separator + wordparts.start
+        # grep's \< and \> only match next to a *word* character (letter,
+        # digit or underscore). Punctuation such as ',' is not a word
+        # character, so "\<abc,\>" can never match: \> needs a word character
+        # right before it. The same goes for leading punctuation and \<.
+        #
+        # So split the word into three parts:
+        #     lead   punctuation before the first letter/wildcard  -> before \<
+        #     core   everything in between                         -> inside \< \>
+        #     trail  punctuation after the last letter/wildcard    -> after \>
+        # For example, "'___," has lead "'", core "___" and trail ",".
+        #
+        # Punctuation in the middle of the core, as in "don't" or
+        # "well-known", is fine where it is: once the wildcards are filled in,
+        # it sits between two letters.
+        #
+        # '_' is deliberately not in the strip list. It is the wildcard, so it
+        # is part of the core.
+        core = w.strip("-.,?'")
+        if not core:
+            # The word is only punctuation (e.g. "-"). There is no word
+            # character for \< or \> to attach to, so emit it as a literal.
+            regex += separator + literal(w)
+            separator = "[[:space:]]\\+"
+            continue
+        lead = w[:w.index(core)]
+        trail = w[len(lead) + len(core):]
+        regex += separator + literal(lead) + wordparts.start
+
+        # Walk the core. Consecutive '_' wildcards are counted in `unders`
+        # and written out as one character class with a repeat count, e.g.
+        # "___" becomes "[b-z]\{3\}". Any other character ends the run, so
+        # flush the pending wildcards first and then write that character.
         unders = 0
-        for ch in w:
+        for ch in core:
             if ch != "_":
                 if unders > 0:
                     regex += chars_to_string()
                 if unders > 1:
                     regex += f"\\{{{unders}\\}}"
                 unders = 0
-                if ch == '.':
-                    regex += "\\"
-                regex += ch
+                regex += literal(ch)
             else:
                 if len(removed_chars) >= len(string.ascii_lowercase):
                     sys.exit("Wildcard in input but there are no wildcard characters")
                 unders += 1
+        # Flush any wildcards still pending at the end of the core.
         if unders > 0:
             regex += chars_to_string()
         if unders > 1:
             regex += f"\\{{{unders}\\}}"
-        regex += wordparts.end
+
+        # Close the word, then add any trailing punctuation outside the
+        # boundary.
+        regex += wordparts.end + literal(trail)
+        # Words are separated by one or more whitespace characters.
         separator = "[[:space:]]\\+"
 
     print(regex)

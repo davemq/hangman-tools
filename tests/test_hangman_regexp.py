@@ -62,5 +62,46 @@ class RemoveOptionTest(unittest.TestCase):
                 self.assertIn("must be a single letter a-z", err)
 
 
+class PunctuationTest(unittest.TestCase):
+    """Punctuation at the ends of a word must be outside \\< and \\>."""
+
+    def setUp(self):
+        hangman_regexp.removed_chars.clear()
+
+    def check(self, phrase, expected, *opts):
+        hangman_regexp.removed_chars.clear()
+        code, out, _ = run_main(*opts, phrase)
+        self.assertIsNone(code)
+        self.assertEqual(out.strip(), expected)
+
+    def test_trailing_comma_issue_49(self):
+        self.check(
+            "_ _ _ R _ / _ _ _ _ / _ _ / A / _ _ _ _ _ , /",
+            r"\<[b-qsu-z]\{3\}r[b-qsu-z]\>[[:space:]]\+\<[b-qsu-z]\{4\}\>"
+            r"[[:space:]]\+\<[b-qsu-z]\{2\}\>[[:space:]]\+\<a\>"
+            r"[[:space:]]\+\<[b-qsu-z]\{5\}\>,",
+            "-x", "a", "-x", "t",
+        )
+
+    def test_leading_punctuation(self):
+        self.check("' _ _", r"'\<[[:lower:]]\{2\}\>")
+
+    def test_interior_punctuation_stays_inside(self):
+        self.check("_ _ _ ' _", r"\<[[:lower:]]\{3\}'[[:lower:]]\>")
+
+    def test_leading_and_interior_punctuation(self):
+        self.check(
+            "' _ _ _ _ _ ' _", r"'\<[[:lower:]]\{5\}'[[:lower:]]\>"
+        )
+
+    def test_punctuation_only_word(self):
+        self.check(
+            "- / _ _", r"-[[:space:]]\+\<[[:lower:]]\{2\}\>"
+        )
+
+    def test_trailing_period_is_escaped_and_outside(self):
+        self.check("_ _ .", r"\<[[:lower:]]\{2\}\>\.")
+
+
 if __name__ == "__main__":
     unittest.main()
